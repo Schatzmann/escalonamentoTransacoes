@@ -28,61 +28,42 @@ int cont_Lines(FILE* fp) {
 	return lines;
 }
 
-int le_entrada(){
-	FILE *arq;
-
-	arq = fopen("teste.in", "r");
-	
-	if(arq == NULL){
-		perror ("Erro ao abrir arquivo \n");
-		exit (1);
-	} else {
-		t_operacao* operacoes;
+t_operacao *le_entrada(int *qtdeOperacoes){
 		int tamArq = 0;
+		t_operacao* operacoes;
 
-		tamArq = cont_Lines(arq);
-
-		printf("%d\n", tamArq);
+		tamArq = cont_Lines(stdin);
 
 		operacoes = (t_operacao*) malloc((tamArq - 1) * sizeof(t_operacao));
 
-		rewind(arq);
+		rewind(stdin);
 
 		for(int i = 0; i <= tamArq; i++){
-			fscanf(arq, "%d %d %c %c", &operacoes[i].tempo, &operacoes[i].idT, &operacoes[i].opr, &operacoes[i].atrib);
+			fscanf(stdin, "%d %d %c %c", &operacoes[i].tempo, &operacoes[i].idT, &operacoes[i].opr, &operacoes[i].atrib);
 		}
 
-		printf("%d %d %c %c", operacoes[20].tempo, operacoes[20].idT, operacoes[20].opr, operacoes[20].atrib);
-	}
 
-	fclose(arq);
-	
-	return 0;
+		*qtdeOperacoes = tamArq;
+		
+		return operacoes;
 }
 
-// void escreveSaida(char* arqSaida){
-// 	FILE *arq;
-
-// 	arq = fopen(arqSaida, "w");
-
-// 	if(!arq){
-// 		printf("ERRO: erro ao abrir arquivo de saída.\n");
-
-// 	} else {
-
-// 		fprintf(arq, "# ans15  Annelyse Schatzmann\n");
-// 		fprintf(arq, "# ezp15  Eduardo Zimermam Pereira\n");
-
-// 		fprintf(arq, "# \n");
-
-
-// 		fclose(arq);
-// 	}
-// }
-
-
-
 int main(){
-	le_entrada();
-	//escreveSaida(argv[]);
+	t_operacao* operacoes;
+	int qtdeOperacoes;
+
+	operacoes = le_entrada(&qtdeOperacoes);
+
+	/* Aresta Ti -> Tj para cada r(x) em Tj depois de w(x) em Ti */
+	for(int i=0; i < qtdeOperacoes; i++){
+		if(operacoes[i].opr == 'W'){
+			for(int j=i + 1; j < qtdeOperacoes; j++){
+				if(operacoes[j].opr == 'C' && operacoes[i].idT == operacoes[j].idT)
+					break;
+				if(operacoes[j].opr == 'R' && operacoes[i].atrib == operacoes[j].atrib && operacoes[i].idT != operacoes[j].idT){
+					printf("Aresta criada de: %d -> %d \n", operacoes[i].idT, operacoes[j].idT);
+				}
+			}
+		}
+	}
 }

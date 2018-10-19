@@ -66,4 +66,30 @@ int main(){
 			}
 		}
 	}
+
+	/* Aresta Ti -> Tj para cada w(x) em Tj depois de r(x) em Ti */
+	for(int i=0; i < qtdeOperacoes; i++){
+		if(operacoes[i].opr == 'R'){
+			for(int j=i + 1; j < qtdeOperacoes; j++){
+				if(operacoes[j].opr == 'C' && operacoes[i].idT == operacoes[j].idT)
+					break;
+				if(operacoes[j].opr == 'W' && operacoes[i].atrib == operacoes[j].atrib && operacoes[i].idT != operacoes[j].idT){
+					printf("Aresta criada de: %d -> %d \n", operacoes[i].idT, operacoes[j].idT);
+				}
+			}
+		}
+	}
+
+	/* Aresta Ti -> Tj para cada w(x) em Tj depois de w(x) em Ti */
+	for(int i=0; i < qtdeOperacoes; i++){
+		if(operacoes[i].opr == 'W'){
+			for(int j=i + 1; j < qtdeOperacoes; j++){
+				if(operacoes[j].opr == 'C' && operacoes[i].idT == operacoes[j].idT)
+					break;
+				if(operacoes[j].opr == 'W' && operacoes[i].atrib == operacoes[j].atrib && operacoes[i].idT != operacoes[j].idT){
+					printf("Aresta criada de: %d -> %d \n", operacoes[i].idT, operacoes[j].idT);
+				}
+			}
+		}
+	}
 }

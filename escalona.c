@@ -52,8 +52,6 @@ t_operacao *leEntrada(int *qtdeOperacoes){
 char *verificaSerialConflito(int **matrizArestas, int tamMatriz){
 	int ehSerial = 1;
 
-	printMatriz(matrizArestas, tamMatriz);
-
 	for(int i = 1; i <= tamMatriz; ++i){
 		for(int j = 1; j <= tamMatriz; ++j){
 			if(matrizArestas[i][j] != 0){
@@ -193,6 +191,36 @@ char *encontraIdsEscalonamento(t_operacao *operacoes, int tempoInicio, int tempo
 	return idsRetorno;
 }
 
+t_operacao *criaSLinha(t_operacao *operacoes, int tempoInicio, int tempoFim, int qtdeIds){
+	t_operacao *sLinha;
+	int tamSLinha, index;
+
+	index = 1;
+
+	tamSLinha = (tempoFim - tempoInicio) + 1;
+
+	sLinha = (t_operacao*) malloc(tamSLinha * sizeof(t_operacao));
+
+	for (int i = 1; i <= qtdeIds; ++i){
+		for(int j = tempoInicio; j <= tempoFim; ++j){
+			if(operacoes[j].idT == i && operacoes[j].opr != 'C'){
+				sLinha[index].idT = operacoes[j].idT;
+				sLinha[index].opr = operacoes[j].opr;
+				sLinha[index].atrib = operacoes[j].atrib;
+				sLinha[index].tempo = index;
+				index++;
+			}
+		}
+	}
+
+
+	for (int i = 1; i <= index - 1; ++i){
+		printf("%d %d %c %c\n", sLinha[i].tempo, sLinha[i].idT, sLinha[i].opr, sLinha[i].atrib);
+	}
+
+	return sLinha;
+}
+
 int main(){
 	t_operacao *operacoes;
 	int **matrizArestas, tempoInicio, tempoFim, qtdeCommits, qtdeOperacoes, numEscalonamento;
@@ -219,7 +247,6 @@ int main(){
 		strcat(resultado, " ");
 		strcat(resultado, serialConfl);
 
-		printf("%s\n", resultado);
 
 		for(int i = 1; i <= qtdeCommits; ++i){
 			free(matrizArestas[i]);
@@ -228,41 +255,17 @@ int main(){
 		free(matrizArestas);
 
 		numEscalonamento++;
+
+
+
+		criaSLinha(operacoes, tempoInicio, tempoFim, qtdeCommits);
+
+
 		tempoInicio = tempoFim + 1;
+
+
+
+
+		// printf("%s\n", resultado);
 	}
-
-
-	// indexOpr = 0;
-
-	// for(int i = 1; indexOpr < qtdeOperacoes; ++i){
-
-	// 	serialConfl = (char*) malloc(200 * sizeof(char));
-	// 	idsEscalona = (char*) malloc(200 * sizeof(char));
-	// 	resultado = (char*) malloc(200 * sizeof(char));
-
-	// 	escalonamento = 
-
-	// 	matrizArestas = aloca_matriz(escalonamento, tamEscalonamento, &tamMatriz);
-	// 	serial_conflito(escalonamento, tamEscalonamento, matrizArestas);
-	
-	// 	serialConfl = verifica_serial_conflito(matrizArestas, tamMatriz);
-		
-	// 	sprintf(aux, "%d", i);
-
-	// 	strcpy(resultado, aux);
-	// 	strcat(resultado, " ");
-	// 	strcat(resultado, idsEscalona);
-	// 	strcat(resultado, " ");
-	// 	strcat(resultado, serialConfl);
-
-	// 	printf("%s\n", resultado);
-
-	// 	free(resultado);
-	// 	free(idsEscalona);
-	// 	for (int i = 0; i < tamEscalonamento - 1; ++i){
-	// 		free(matrizArestas[i]);
-	// 	}
-
-	// 	free(matrizArestas);
-	// }
 }

@@ -14,6 +14,11 @@ typedef struct t_operacao {
 	char atrib;
 } t_operacao;
 
+typedef struct t_equivale {
+	int read;
+	int write;
+} t_equivale;
+
 int contLines(FILE* fp) {
 	int lines = 0;
 	char ch;
@@ -197,34 +202,73 @@ t_operacao *criaSLinha(t_operacao *operacoes, int tempoInicio, int tempoFim, int
 
 	index = 1;
 
-	tamSLinha = (tempoFim - tempoInicio) + 1;
+	tamSLinha = tempoFim - qtdeIds;
 
-	sLinha = (t_operacao*) malloc(tamSLinha * sizeof(t_operacao));
+	sLinha = (t_operacao*) malloc((tamSLinha + 1) * sizeof(t_operacao));
 
 	for (int i = 1; i <= qtdeIds; ++i){
 		for(int j = tempoInicio; j <= tempoFim; ++j){
 			if(operacoes[j].idT == i && operacoes[j].opr != 'C'){
 				sLinha[index].idT = operacoes[j].idT;
-				sLinha[index].opr = operacoes[j].opr;
-				sLinha[index].atrib = operacoes[j].atrib;
+				strcpy(&sLinha[index].opr, &operacoes[j].opr);
+				strcpy(&sLinha[index].atrib, &operacoes[j].atrib);
 				sLinha[index].tempo = index;
 				index++;
 			}
 		}
 	}
 
-
-	for (int i = 1; i <= index - 1; ++i){
-		printf("%d %d %c %c\n", sLinha[i].tempo, sLinha[i].idT, sLinha[i].opr, sLinha[i].atrib);
-	}
-
 	return sLinha;
 }
 
+char *equivalenciaVisao(t_operacao *sLinha, t_operacao *s, int tamEscalonamento){
+	int ehEquivalente, ultWriteS, ultWriteLinha, primReadS;
+	t_equivale sreads
+
+	ehEquivalente = 0;
+	ultWriteS = 0;
+	ultWriteLinha = 0;
+
+	for(int i = tamEscalonamento; i >= 1; --i){
+		if(s[i].opr == 'W'){
+			ultWriteS = i;
+			break;
+		}
+	}
+
+	for(int i = tamEscalonamento; i >= 1; --i){
+		if(sLinha[i].opr == 'W'){
+			ultWriteLinha = i;
+			break;
+		}
+	}
+
+	for(int i = 1; i <= tamEscalonamento; ++i)	{
+		if(s[i].opr == 'R'){
+			for(int j = i; j >= 0; ++j){
+				if((s[j].opr == 'W') && (s[j].atrib == s[i].atrib)){
+
+				}
+			}
+		}
+	}
+
+	if((s[ultWriteS].atrib == sLinha[ultWriteLinha].atrib) && (s[ultWriteS].idT == sLinha[ultWriteLinha].idT)){
+		ehEquivalente = 1;
+	}
+
+
+	if (ehEquivalente){
+		return "SV";
+	} else {
+		return "NV";
+	}
+}
+
 int main(){
-	t_operacao *operacoes;
+	t_operacao *operacoes, *sLinha;
 	int **matrizArestas, tempoInicio, tempoFim, qtdeCommits, qtdeOperacoes, numEscalonamento;
-	char *serialConfl, *idsEscalona, *resultado, *aux;
+	char *serialConfl, *idsEscalona, *resultado, *aux, *eqVisao;
 
 	operacoes = leEntrada(&qtdeOperacoes);
 	tempoInicio = 1;
@@ -257,15 +301,17 @@ int main(){
 		numEscalonamento++;
 
 
+		sLinha = criaSLinha(operacoes, tempoInicio, tempoFim, qtdeCommits);
+		qtdeOperacoes = tempoFim - qtdeCommits;
 
-		criaSLinha(operacoes, tempoInicio, tempoFim, qtdeCommits);
+		eqVisao = equivalenciaVisao(sLinha, operacoes, qtdeOperacoes);
+		
+		strcat(resultado, " ");
+		strcat(resultado, eqVisao);
 
 
 		tempoInicio = tempoFim + 1;
 
-
-
-
-		// printf("%s\n", resultado);
+		printf("%s\n", resultado);
 	}
 }

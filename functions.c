@@ -10,6 +10,14 @@
 
 #include "functions.h"
 
+/**
+ * @brief Conta as linhas do arquivo passado como parâmetro.
+ * @param fp    Ponteiro para um arquivo.
+ * @return Um valor inteiro que é a quantidade de linhas do arquivo.
+ *
+ * Foi implementado para devolver a quantidade de operações do 
+ * escalonamento.
+ */
 int contLines(FILE* fp) {
 	int lines = 0;
 	char ch;
@@ -26,6 +34,12 @@ int contLines(FILE* fp) {
 	return lines;
 }
 
+/**
+ * @brief Lê a entrada através de stdin.
+ * @param qtdeOperacoes    Ponteiro para um inteiro representando a quantidade de operações no escalonamento.
+ * @return Um vetor de contendo todas as operações.
+ *
+ */
 t_operacao *leEntrada(int *qtdeOperacoes){
 		int tamArq = 0;
 		t_operacao* operacoes;
@@ -45,6 +59,17 @@ t_operacao *leEntrada(int *qtdeOperacoes){
 		return operacoes;
 }
 
+/**
+ * @brief Método que itera uma matriz verificando seus valores.
+ * @param matrizArestas    Ponteiro para ponteiros de inteiros.
+ * @param tamMatriz        Inteiro com o tamanho da matriz.
+ * @return Ponteiro para char com o resultado da iteração.
+ *
+ * O método verifica se dentro da matriz de adjacência passada como parâmetro
+ * existe um ciclo, mudando o valor da váriavel ehSerial.
+ * "SS" = Serial
+ * "NS" = Não Serial
+ */
 char *verificaSerialConflito(int **matrizArestas, int tamMatriz){
 	int ehSerial = 1;
 
@@ -65,6 +90,18 @@ char *verificaSerialConflito(int **matrizArestas, int tamMatriz){
 	}
 }
 
+/**
+ * @brief Verifica as regras para um escalonamento. 
+ * @param operacoes        Ponteiro para a struct t_operacao.
+ * @param tempoInicio      Inteiro usado como índice.
+ * @param tempoFim         Inteiro usado como índice.
+ * @param matrizArestas    Ponteiro para ponteiros de inteiros.
+ * @param tamMatriz        Inteiro com o tamanho da matriz.
+ * @return Ponteiro para char com o resultado da iteração.
+ *
+ * O método é responsável por verificar regra por regra para a serialidade por conflito
+ * fazendo uso do método verificarSerialConflito para retornar o resultado correto.
+ */
 char *serialConflito(t_operacao *operacoes, int tempoInicio, int tempoFim, int **matrizArestas, int tamMatriz){
 
 	/* Aresta Ti -> Tj para cada r(x) em Tj depois de w(x) em Ti */
@@ -109,15 +146,12 @@ char *serialConflito(t_operacao *operacoes, int tempoInicio, int tempoFim, int *
 	return verificaSerialConflito(matrizArestas, tamMatriz);
 }
 
-void printMatriz(int** matrizArestas, int tamMatriz){
-	for (int i = 1; i <= tamMatriz; ++i){
-		for (int j = 1; j <= tamMatriz; ++j){
-			printf("%d ", matrizArestas[i][j]);
-		}
-		printf("\n");
-	}
-}
-
+/**
+ * @brief Aloca uma matriz de inteiros. 
+ * @param tamMatriz        Inteiro com o tamanho da matriz.
+ * @return Ponteiro para ponteiro de inteiros.
+ *
+ */
 int** alocaMatriz(int tamMatriz){
 	int **matriz;
 
@@ -133,6 +167,17 @@ int** alocaMatriz(int tamMatriz){
 	return matriz;
 }
 
+/**
+ * @brief Define S'. 
+ * @param operacoes        Ponteiro para a struct t_operacao.
+ * @param qtdeOperacoes    Inteiro com a quantidade de operações do escalonamento.
+ * @param tempoInicio      Ponteiro para inteiro usado como índice.
+ * @param tempoFim         Ponteiro para inteiro usado como índice.
+ *
+ * O método é responsável por encontrar onde um escalonamento inicia e termina. Foi
+ * implementado para que pudesse separar dois escalonamento que viessem no mesmo arquivo
+ * de entrada.
+ */
 void encontraEscalonamento(t_operacao *operacoes, int qtdeOperacoes, int *tempoInicio, int *tempoFim){
 	int i;
 
@@ -144,10 +189,28 @@ void encontraEscalonamento(t_operacao *operacoes, int qtdeOperacoes, int *tempoI
 	}
 }
 
+/**
+ * @brief Compara dois elementos. 
+ * @param a     Elemento a ser comparado.
+ * @param b     Elemento a ser comparado.
+ * @return Inteiro que representa um booleano, sendo 0 falso e 1 positivo.
+ *
+ * Método apenas compara dois elementos, usada para fazer a ordenação das operações.
+ */
 int cmpfunc(const void *a, const void *b) {
    return ( *(int*)a - *(int*)b );
 }
 
+/**
+ * @brief Verifica quais são as transações participantes no escalonamento. 
+ * @param operacoes        Ponteiro para a struct t_operacao.
+ * @param tempoInicio      Ponteiro para inteiro usado como índice.
+ * @param tempoFim         Ponteiro para inteiro usado como índice.
+ * @param qtdeIds          Inteiro com a quantidade de transações do escalonamento.
+ * @return Ponteiro para char contendo os id's da Transação separados por vírgula.
+ *
+ * Método verifica cada operação de commit na transação para capturar seus id's.
+ */
 char *encontraIdsEscalonamento(t_operacao *operacoes, int tempoInicio, int tempoFim, int *qtdeIds){
 	int *ids;
 	char *idsRetorno, *aux;
@@ -187,6 +250,16 @@ char *encontraIdsEscalonamento(t_operacao *operacoes, int tempoInicio, int tempo
 	return idsRetorno;
 }
 
+/**
+ * @brief Cria um escalonamento a partir de outro. 
+ * @param operacoes        Ponteiro para a struct t_operacao.
+ * @param tempoInicio      Ponteiro para inteiro usado como índice.
+ * @param tempoFim         Ponteiro para inteiro usado como índice.
+ * @param qtdeIds          Inteiro com a quantidade de transações do escalonamento.
+ * @return Um ponteiro do tipo t_operacao para o escalonamento S'. 
+ *
+ * Método cria um escalonamento secundário a partir do escalonamento passado como parâmetro.
+ */
 t_operacao *criaSLinha(t_operacao *operacoes, int tempoInicio, int tempoFim, int qtdeIds){
 	t_operacao *sLinha;
 	int tamSLinha, index;
@@ -212,6 +285,16 @@ t_operacao *criaSLinha(t_operacao *operacoes, int tempoInicio, int tempoFim, int
 	return sLinha;
 }
 
+/**
+ * @brief Compara dois vetores para verificar a sua igualdade. 
+ * @param primeiroVetor    Ponteiro para a struct t_equivale.
+ * @param SegundoVetor     Ponteiro para a struct t_equivale.
+ * @param tamanho          Inteiro com o tamanho dos vetores passados como parâmetro.
+ * @return Inteiro que representa um booleano, sendo 0 falso e 1 positivo.
+ *
+ * O método verifica se cada elemento do primeiro vetor é igual ao segundo, a igualdade
+ * é verificada em termos de posição e de conteúdo.
+ */
 int vetoresIguais(t_equivale *primeiroVetor, t_equivale *segundoVetor, int tamanho){
 	int ehIgual = 1;
 
@@ -225,6 +308,18 @@ int vetoresIguais(t_equivale *primeiroVetor, t_equivale *segundoVetor, int taman
 	return ehIgual;
 }
 
+/**
+ * @brief Aplica as regras de equivalência por visão. 
+ * @param sLinha             Ponteiro para a struct t_operacao.
+ * @param s                  Ponteiro para a struct t_operacao.
+ * @param tamEscalonamento   Inteiro com o tamanho dos escalonamentos passados como parâmetro.
+ * @return Um ponteiro para char com o resultado da iteração.
+ *
+ * O método verifica se os vetores de operações são iguais, baseado no retorno da função
+ * vetoresIguais. Sendo o retorno os dois casos abaixo:
+ * "SV" = Equivalente por Visão
+ * "NV" = Não Equivalente por Visão
+ */
 char *equivalenciaVisao(t_operacao *sLinha, t_operacao *s, int tamEscalonamento){
 	int ehEquivalente, ultWriteS, ultWriteLinha, tamEquivS;
 	t_equivale *sReads, *sLinhaReads;

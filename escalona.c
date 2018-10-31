@@ -5,6 +5,17 @@
 
 #include "functions.h"
 
+/**
+ * @file escalona.c
+ * @brief Programa principal.
+ *
+ * A função principal tem o objetivo de fazer a chamada de todas as funções e organizar os
+ * parâmetros de cada função para que sejam executadas de forma correta e tenham o retorno
+ * esperado.
+ *
+ *O resultado final é todo concatenado nesta função para ser exibido ao usuário, sendo de
+ *monstrado em stdout.
+*/
 int main(){
 	t_operacao *operacoes, *sLinha;
 	int **matrizArestas, tempoInicio, tempoFim, qtdeCommits, qtdeOperacoes, numEscalonamento;

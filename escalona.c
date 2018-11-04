@@ -48,7 +48,8 @@ int main(){
 
 		numEscalonamento++;
 
-		// sLinha = criaSLinha(operacoes, tempoInicio, tempoFim, qtdeCommits);
+		sLinha = criaSLinha(operacoes, tempoInicio, tempoFim, qtdeId);
+
 		// qtdeOperacoes = tempoFim - qtdeCommits;
 
 		// eqVisao = equivalenciaVisao(sLinha, operacoes, qtdeOperacoes);
@@ -56,7 +57,7 @@ int main(){
 		// strcat(resultado, " ");
 		// strcat(resultado, eqVisao);
 
-		printf("%s\n", resultado);
+		// printf("%s\n", resultado);
 
 		free(idsEscalona);
 		tempoInicio = tempoFim + 1;

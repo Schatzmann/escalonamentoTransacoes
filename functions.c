@@ -121,9 +121,9 @@ char *serialConflito(t_operacao *operacoes, int tempoInicio, int tempoFim, int *
 	for(int i=tempoInicio; i <= tempoFim; i++){
 		if(operacoes[i].opr == 'R' || operacoes[i].opr == 'r'){
 			for(int j=i + 1; j <= tempoFim; j++){
-				if(operacoes[j].opr == 'C' || operacoes[i].opr == 'c')
+				if(operacoes[j].opr == 'C' || operacoes[j].opr == 'c')
 					break;
-				if((operacoes[j].opr == 'W' || operacoes[i].opr == 'w') && operacoes[i].atrib == operacoes[j].atrib && operacoes[i].idT != operacoes[j].idT){
+				if((operacoes[j].opr == 'W' || operacoes[j].opr == 'w') && operacoes[i].atrib == operacoes[j].atrib && operacoes[i].idT != operacoes[j].idT){
 					matrizArestas[operacoes[i].idT][operacoes[j].idT] = 1;
 				}
 			}
@@ -134,9 +134,9 @@ char *serialConflito(t_operacao *operacoes, int tempoInicio, int tempoFim, int *
 	for(int i=tempoInicio; i <= tempoFim; i++){
 		if(operacoes[i].opr == 'W' || operacoes[i].opr == 'w'){
 			for(int j=i + 1; j <= tempoFim; j++){
-				if(operacoes[j].opr == 'C' || operacoes[i].opr == 'c')
+				if(operacoes[j].opr == 'C' || operacoes[j].opr == 'c')
 					break;
-				if((operacoes[j].opr == 'W' || operacoes[i].opr == 'w') && operacoes[i].atrib == operacoes[j].atrib && operacoes[i].idT != operacoes[j].idT){
+				if((operacoes[j].opr == 'W' || operacoes[j].opr == 'w') && operacoes[i].atrib == operacoes[j].atrib && operacoes[i].idT != operacoes[j].idT){
 					matrizArestas[operacoes[i].idT][operacoes[j].idT] = 1;
 				}
 			}
@@ -294,13 +294,13 @@ t_operacao *criaSLinha(t_operacao *operacoes, int tempoInicio, int tempoFim, int
 
 	index = 1;
 
-	tamSLinha = tempoFim - qtdeIds;
+	tamSLinha = (tempoFim - tempoInicio) - (qtdeIds - 1);
 
 	sLinha = (t_operacao*) malloc((tamSLinha + 1) * sizeof(t_operacao));
 
 	for (int i = 1; i <= qtdeIds; ++i){
 		for(int j = tempoInicio; j <= tempoFim; ++j){
-			if(operacoes[j].idT == i && operacoes[j].opr != 'C'){
+			if(operacoes[j].idT == i && operacoes[j].opr != 'c'){
 				sLinha[index].idT = operacoes[j].idT;
 				strcpy(&sLinha[index].opr, &operacoes[j].opr);
 				strcpy(&sLinha[index].atrib, &operacoes[j].atrib);

@@ -106,11 +106,11 @@ char *serialConflito(t_operacao *operacoes, int tempoInicio, int tempoFim, int *
 
 	/* Aresta Ti -> Tj para cada r(x) em Tj depois de w(x) em Ti */
 	for(int i=tempoInicio; i <= tempoFim; i++){
-		if(operacoes[i].opr == 'W'){
+		if(operacoes[i].opr == 'w' || operacoes[i].opr == 'W'){
 			for(int j=i + 1; j <= tempoFim; j++){
-				if(operacoes[j].opr == 'C' && operacoes[i].idT == operacoes[j].idT)
+				if(operacoes[j].opr == 'c' || operacoes[j].opr == 'C')
 					break;
-				if(operacoes[j].opr == 'R' && operacoes[i].atrib == operacoes[j].atrib && operacoes[i].idT != operacoes[j].idT){
+				if((operacoes[j].opr == 'R' || operacoes[j].opr == 'r') && operacoes[i].atrib == operacoes[j].atrib && operacoes[i].idT != operacoes[j].idT){
 					matrizArestas[operacoes[i].idT][operacoes[j].idT] = 1;
 				}
 			}
@@ -119,11 +119,11 @@ char *serialConflito(t_operacao *operacoes, int tempoInicio, int tempoFim, int *
 
 	/* Aresta Ti -> Tj para cada w(x) em Tj depois de r(x) em Ti */
 	for(int i=tempoInicio; i <= tempoFim; i++){
-		if(operacoes[i].opr == 'R'){
+		if(operacoes[i].opr == 'R' || operacoes[i].opr == 'r'){
 			for(int j=i + 1; j <= tempoFim; j++){
-				if(operacoes[j].opr == 'C' && operacoes[i].idT == operacoes[j].idT)
+				if(operacoes[j].opr == 'C' || operacoes[i].opr == 'c')
 					break;
-				if(operacoes[j].opr == 'W' && operacoes[i].atrib == operacoes[j].atrib && operacoes[i].idT != operacoes[j].idT){
+				if((operacoes[j].opr == 'W' || operacoes[i].opr == 'w') && operacoes[i].atrib == operacoes[j].atrib && operacoes[i].idT != operacoes[j].idT){
 					matrizArestas[operacoes[i].idT][operacoes[j].idT] = 1;
 				}
 			}
@@ -132,11 +132,11 @@ char *serialConflito(t_operacao *operacoes, int tempoInicio, int tempoFim, int *
 
 	/* Aresta Ti -> Tj para cada w(x) em Tj depois de w(x) em Ti */
 	for(int i=tempoInicio; i <= tempoFim; i++){
-		if(operacoes[i].opr == 'W'){
+		if(operacoes[i].opr == 'W' || operacoes[i].opr == 'w'){
 			for(int j=i + 1; j <= tempoFim; j++){
-				if(operacoes[j].opr == 'C' && operacoes[i].idT == operacoes[j].idT)
+				if(operacoes[j].opr == 'C' || operacoes[i].opr == 'c')
 					break;
-				if(operacoes[j].opr == 'W' && operacoes[i].atrib == operacoes[j].atrib && operacoes[i].idT != operacoes[j].idT){
+				if((operacoes[j].opr == 'W' || operacoes[i].opr == 'w') && operacoes[i].atrib == operacoes[j].atrib && operacoes[i].idT != operacoes[j].idT){
 					matrizArestas[operacoes[i].idT][operacoes[j].idT] = 1;
 				}
 			}
@@ -158,47 +158,34 @@ int** alocaMatriz(int tamMatriz){
 	matriz = (int**) malloc((tamMatriz + 1) * sizeof(int*));
 
 	for (int i = 1; i <= tamMatriz; ++i){
-		matriz[i] = (int*) malloc(tamMatriz * sizeof(int));
-		for (int j = 1; j <= tamMatriz; ++j){
-			matriz[i][j] = 0;
-		}
+		matriz[i] = (int*) malloc((tamMatriz + 1) * sizeof(int));
 	}
 
 	return matriz;
 }
 
 /**
- * @brief Define S'. 
- * @param operacoes        Ponteiro para a struct t_operacao.
- * @param qtdeOperacoes    Inteiro com a quantidade de operações do escalonamento.
- * @param tempoInicio      Ponteiro para inteiro usado como índice.
- * @param tempoFim         Ponteiro para inteiro usado como índice.
+ * @brief Ordenação de um vetor de inteiro pelo algoritmo de Seleção. 
+ * @param vetor Ponteiro para inteiros como um vetor.
+ * @param tam   Tamanho do ponteiro para inteiros.
  *
- * O método é responsável por encontrar onde um escalonamento inicia e termina. Foi
- * implementado para que pudesse separar dois escalonamento que viessem no mesmo arquivo
- * de entrada.
  */
-void encontraEscalonamento(t_operacao *operacoes, int qtdeOperacoes, int *tempoInicio, int *tempoFim){
-	int i;
+void selectionSort(int* vetor, int tam){  
+  int min, aux;
 
-	for (i = *tempoInicio + 1; i <= qtdeOperacoes; ++i){
-		if((operacoes[i].opr == 'C') && (operacoes[i].idT == operacoes[*tempoInicio].idT)){
-			*tempoFim = i;
-			break;
-		}
-	}
-}
-
-/**
- * @brief Compara dois elementos. 
- * @param a     Elemento a ser comparado.
- * @param b     Elemento a ser comparado.
- * @return Inteiro que representa um booleano, sendo 0 falso e 1 positivo.
- *
- * Método apenas compara dois elementos, usada para fazer a ordenação das operações.
- */
-int cmpfunc(const void *a, const void *b) {
-   return ( *(int*)a - *(int*)b );
+  for(int i = 1; i <= tam; i++){ 
+    min = i; 
+    for(int j = i + 1; j <= tam; j++) { 
+      if(vetor[j] < vetor[min]) { 
+        min = j; 
+      } 
+    } 
+    if(i != min) { 
+      aux = vetor[min]; 
+      vetor[min] = vetor[i]; 
+      vetor[i] = aux; 
+    } 
+  } 
 }
 
 /**
@@ -211,43 +198,84 @@ int cmpfunc(const void *a, const void *b) {
  *
  * Método verifica cada operação de commit na transação para capturar seus id's.
  */
-char *encontraIdsEscalonamento(t_operacao *operacoes, int tempoInicio, int tempoFim, int *qtdeIds){
-	int *ids;
+char *transformaIds(int* vetorIds, int qtdeIds){
 	char *idsRetorno, *aux;
-	int auxQtdeIds;
 
-	ids = (int*) malloc(sizeof(int));
-	auxQtdeIds = 0;
+	selectionSort(vetorIds, qtdeIds);
 
-	for(int i = tempoInicio; i <= tempoFim; ++i){
-		if(operacoes[i].opr == 'C'){
-			ids[auxQtdeIds] = operacoes[i].idT;
-			auxQtdeIds++;
-			ids = (int*) realloc(ids, sizeof(int));
-		}
-	}
-
-	qsort(ids, auxQtdeIds, sizeof(int), cmpfunc);
-
-	idsRetorno = (char*) malloc(auxQtdeIds * sizeof(char));
+	idsRetorno = (char*) malloc(qtdeIds * sizeof(char));
 	strcpy(idsRetorno, "");
 	aux = (char*) malloc(sizeof(char));
 
-	for (int i = 0; i < auxQtdeIds - 1; ++i){
-		sprintf(aux, "%d", ids[i]);
+	for (int i = 1; i <= qtdeIds - 1; ++i){
+		sprintf(aux, "%d", vetorIds[i]);
 		strcat(idsRetorno, aux);
 		strcat(idsRetorno, ",");
 	}
 
-	sprintf(aux, "%d", ids[auxQtdeIds - 1]);
+	sprintf(aux, "%d", vetorIds[qtdeIds]);
 	strcat(idsRetorno, aux);
 
-	free(ids);
-	free(aux);
-
-	*qtdeIds = auxQtdeIds;
-
 	return idsRetorno;
+}
+
+/**
+ * @brief Define S'. 
+ * @param operacoes        Ponteiro para a struct t_operacao.
+ * @param qtdeOperacoes    Inteiro com a quantidade de operações do escalonamento.
+ * @param tempoInicio      Ponteiro para inteiro usado como índice.
+ * @param tempoFim         Ponteiro para inteiro usado como índice.
+ * @param qtdeId           Ponteiro para inteiro para receber a quantidade de Id's no escalonamento.
+ * @return Uma string com os ids já ordenados e prontos para serem concatenados ao resultado final.
+ *
+ * O método é responsável por encontrar onde um escalonamento inicia e termina. Foi
+ * implementado para que pudesse separar dois ou mais escalonamentos que viessem no mesmo arquivo
+ * de entrada.
+ */
+char *encontraEscalonamento(t_operacao *operacoes, int qtdeOperacoes, int *tempoInicio, int *tempoFim, int *qtdeId, int* diff){
+	int i, *vetorId, tamDefault, tamRealIds, jaContemId;
+	char *vetorIdString;
+
+	jaContemId = 0;
+	tamDefault = 5;
+	tamRealIds = 1;
+
+	vetorId = (int*) malloc(tamDefault * sizeof(int));
+
+	for (i = *tempoInicio; i <= qtdeOperacoes; ++i){
+		if(tamRealIds == tamDefault){
+			vetorId = (int*) realloc(vetorId, tamDefault * sizeof(int));
+		}
+
+		for(int j = 1; j <= tamRealIds; ++j){
+			if(operacoes[i].idT == vetorId[j]){
+				jaContemId = 1;
+			}
+		}
+
+		if(!jaContemId){
+			vetorId[tamRealIds] = operacoes[i].idT;
+			tamRealIds++;
+		}
+
+		if(operacoes[i].opr == 'c' || operacoes[i].opr == 'C'){
+			tamRealIds--;
+			*qtdeId = tamRealIds;
+			*tempoFim = i - 1;
+			*tempoFim += tamRealIds;
+			break;
+		}
+
+		jaContemId = 0;
+	}
+
+	vetorIdString =  transformaIds(vetorId, *qtdeId);
+
+	*diff = vetorId[1] - 1;
+
+	free(vetorId);
+
+	return vetorIdString;
 }
 
 /**
@@ -393,5 +421,21 @@ char *equivalenciaVisao(t_operacao *sLinha, t_operacao *s, int tamEscalonamento)
 		return "SV";
 	} else {
 		return "NV";
+	}
+}
+
+void alteraIdsTransacao(t_operacao *operacoes, int tempoInicio, int tempoFim, int diff){
+
+	for (int i = tempoInicio; i <= tempoFim; ++i){
+		operacoes[i].idT -= diff;
+	}
+}
+
+void zeraMatriz(int** matriz, int tam){
+
+	for(int i = 1; i <= tam; ++i){
+		for(int j = 1; j <= tam; ++j){
+			matriz[i][j] = 0;
+		}
 	}
 }

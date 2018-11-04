@@ -33,11 +33,14 @@ char *verificaSerialConflito(int**, int);
 char *serialConflito(t_operacao*, int, int, int**, int);
 void printMatriz(int**, int);
 int** alocaMatriz(int);
-void encontraEscalonamento(t_operacao*, int, int*, int*);
-int cmpfunc(const void *, const void *);
-char *encontraIdsEscalonamento(t_operacao*, int, int, int*);
+char *encontraEscalonamento(t_operacao*, int, int*, int*, int*, int*);
+void selectionSort(int*, int);
+char *transformaIds(int*, int);
 t_operacao *criaSLinha(t_operacao*, int, int, int);
 int vetoresIguais(t_equivale*, t_equivale*, int);
 char *equivalenciaVisao(t_operacao*, t_operacao*, int);
+void alteraIdsTransacao(t_operacao*, int, int, int);
+void zeraMatriz(int**, int);
+
 
 #endif

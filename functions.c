@@ -326,6 +326,16 @@ t_operacao *criaSLinha(t_operacao *operacoes, int tempoInicio, int tempoFim, int
 int vetoresIguais(t_equivale *primeiroVetor, t_equivale *segundoVetor, int tamanho){
 	int ehIgual = 1;
 
+	// printf("\n\n\n");
+	// for(int i = 1; i <= tamanho; ++i){
+	// 	printf("%d %d\n", primeiroVetor[i].read, primeiroVetor[i].write);
+	// }
+
+	// printf("\n\n");
+	// for(int i = 1; i <= tamanho; ++i){
+	// 	printf("%d %d\n", segundoVetor[i].read, segundoVetor[i].write);
+	// }
+
 	for(int i = 1; i <= tamanho; ++i){
 		if((primeiroVetor[i].read != segundoVetor[i].read) || (primeiroVetor[i].write != segundoVetor[i].write)){
 			ehIgual = 0;
@@ -348,7 +358,7 @@ int vetoresIguais(t_equivale *primeiroVetor, t_equivale *segundoVetor, int taman
  * "SV" = Equivalente por Visão
  * "NV" = Não Equivalente por Visão
  */
-char *equivalenciaVisao(t_operacao *sLinha, t_operacao *s, int tamEscalonamento){
+char *equivalenciaVisao(t_operacao *sLinha, t_operacao *s, int tempoInicio, int tempoFim){
 	int ehEquivalente, ultWriteS, ultWriteLinha, tamEquivS;
 	t_equivale *sReads, *sLinhaReads;
 
@@ -357,18 +367,15 @@ char *equivalenciaVisao(t_operacao *sLinha, t_operacao *s, int tamEscalonamento)
 	ultWriteLinha = 0;
 	tamEquivS = 1;
 
-	sReads = (t_equivale*) malloc(tamEscalonamento * sizeof(t_equivale));
-	sLinhaReads = (t_equivale*) malloc(tamEscalonamento * sizeof(t_equivale));
-
-	for(int i = tamEscalonamento; i >= 1; --i){
-		if(s[i].opr == 'W'){
+	for(int i = tempoFim; i >= tempoInicio; --i){
+		if(s[i].opr == 'w' || s[i].opr == 'W'){
 			ultWriteS = i;
 			break;
 		}
 	}
 
-	for(int i = tamEscalonamento; i >= 1; --i){
-		if(sLinha[i].opr == 'W'){
+	for(int i = (tempoFim - tempoInicio) + 1; i >= 1; --i){
+		if(sLinha[i].opr == 'w' || sLinha[i].opr == 'W'){
 			ultWriteLinha = i;
 			break;
 		}
@@ -376,15 +383,18 @@ char *equivalenciaVisao(t_operacao *sLinha, t_operacao *s, int tamEscalonamento)
 
 	if((s[ultWriteS].atrib == sLinha[ultWriteLinha].atrib) && (s[ultWriteS].idT == sLinha[ultWriteLinha].idT)){
 
-		for(int i = 1; i <= tamEscalonamento; ++i)	{
-			if(s[i].opr == 'R'){
+		sReads = (t_equivale*) malloc(((tempoFim - tempoInicio) + 1) * sizeof(t_equivale));
+		sLinhaReads = (t_equivale*) malloc(((tempoFim - tempoInicio) + 1) * sizeof(t_equivale));
+
+		for(int i = tempoInicio; i <= tempoFim; ++i)	{
+			if(s[i].opr == 'R' || s[i].opr == 'r'){
 				sReads[tamEquivS].read = s[i].idT;
-				for(int j = i; j > 0; --j){
-					if((s[j].opr == 'W') && (s[j].atrib == s[i].atrib)){
+				for(int j = i; j >= tempoInicio; --j){
+					if((s[j].opr == 'W' || s[j].opr == 'w') && (s[j].atrib == s[i].atrib)){
 						sReads[tamEquivS].write = s[j].idT;
 					}
 	
-					if((j == 1) && (s[j].opr != 'W')){
+					if((j == tempoInicio) && (s[j].opr != 'W' || s[j].opr != 'w')){
 						sReads[tamEquivS].write = 0;	
 					}
 				}
@@ -394,15 +404,15 @@ char *equivalenciaVisao(t_operacao *sLinha, t_operacao *s, int tamEscalonamento)
 
 		tamEquivS = 1;
 	
-		for(int i = 1; i <= tamEscalonamento; ++i)	{
-			if(sLinha[i].opr == 'R'){
+		for(int i = 1; i <= (tempoFim - tempoInicio) + 1; ++i)	{
+			if(sLinha[i].opr == 'R' || sLinha[i].opr == 'r'){
 				sLinhaReads[tamEquivS].read = sLinha[i].idT;
-				for(int j = i; j > 0; --j){
-					if((sLinha[j].opr == 'W') && (sLinha[j].atrib == sLinha[i].atrib)){
+				for(int j = i; j >= 1; --j){
+					if((sLinha[j].opr == 'W' || sLinha[j].opr == 'w') && (sLinha[j].atrib == sLinha[i].atrib)){
 						sLinhaReads[tamEquivS].write = sLinha[j].idT;
 					}
 	
-					if((j == 1) && (sLinha[j].opr != 'W')){
+					if((j == 1) && (sLinha[j].opr != 'W' || sLinha[j].opr != 'w')){
 						sLinhaReads[tamEquivS].write = 0;	
 					}
 				}
@@ -411,11 +421,28 @@ char *equivalenciaVisao(t_operacao *sLinha, t_operacao *s, int tamEscalonamento)
 		}
 	
 		tamEquivS--;
+
+		selectionSortEquivVisao(sReads, tamEquivS);
+		selectionSortEquivVisao(sLinhaReads, tamEquivS);
+
+		printf("\n\n\n");
+
+		printf("VETOR S:\n");
+		for(int i = 1; i <= tamEquivS; ++i){
+			printf("%d %d\n", sReads[i].read, sReads[i].write);
+		}
+		printf("\n\n");
+		printf("VETOR S':\n");
+		for(int i = 1; i <= tamEquivS; ++i){
+			printf("%d %d\n", sLinhaReads[i].read, sLinhaReads[i].write);
+		}
 	
 		if(vetoresIguais(sReads, sLinhaReads, tamEquivS))
 			ehEquivalente = 1;
-	}
 
+		free(sReads);
+		free(sLinhaReads);
+	}
 
 	if (ehEquivalente){
 		return "SV";
@@ -438,4 +465,26 @@ void zeraMatriz(int** matriz, int tam){
 			matriz[i][j] = 0;
 		}
 	}
+}
+
+void selectionSortEquivVisao(t_equivale* vetor, int tamVetor){
+	int min; 
+	t_equivale aux;
+
+	for(int i = 1; i <= tamVetor; i++){ 
+	  min = i; 
+	  for(int j = i + 1; j <= tamVetor; j++) { 
+	    if(vetor[j].read < vetor[min].read) { 
+	      min = j; 
+	    } 
+	  } 
+	  if(i != min) { 
+	    aux.read = vetor[min].read;
+	    aux.write = vetor[min].write; 
+	    vetor[min].read = vetor[i].read;
+	    vetor[min].write = vetor[i].write; 
+	    vetor[i].read = aux.read;
+	    vetor[i].write = aux.write; 
+	  } 
+	} 
 }

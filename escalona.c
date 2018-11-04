@@ -18,7 +18,7 @@
 */
 int main(){
 	t_operacao *operacoes, *sLinha;
-	int **matrizArestas, tempoInicio, tempoFim, qtdeId, qtdeOperacoes, numEscalonamento, diff;
+	int **matrizArestas, tempoInicio, tempoFim, qtdeId, qtdeOperacoes, numEscalonamento, diff, tempoFimSemCommit;
 	char *serialConfl, *idsEscalona, *resultado, *aux, *eqVisao;
 
 	operacoes = leEntrada(&qtdeOperacoes);
@@ -26,12 +26,12 @@ int main(){
 	zeraMatriz(matrizArestas, qtdeOperacoes);
 	tempoInicio = 1;
 	tempoFim = qtdeOperacoes;
-	resultado = (char *) malloc(sizeof(char));
 	numEscalonamento = 1;
 	qtdeId = 0;
 	diff = 0;
 
 	for (int i = tempoInicio; i < qtdeOperacoes; i = tempoFim){
+		resultado = (char *) malloc(sizeof(char));
 		idsEscalona = encontraEscalonamento(operacoes, qtdeOperacoes, &tempoInicio, &tempoFim, &qtdeId, &diff);
 
 		alteraIdsTransacao(operacoes, tempoInicio, tempoFim, diff);
@@ -50,14 +50,14 @@ int main(){
 
 		sLinha = criaSLinha(operacoes, tempoInicio, tempoFim, qtdeId);
 
-		// qtdeOperacoes = tempoFim - qtdeCommits;
+		tempoFimSemCommit = tempoFim - qtdeId;
 
-		// eqVisao = equivalenciaVisao(sLinha, operacoes, qtdeOperacoes);
-		
-		// strcat(resultado, " ");
-		// strcat(resultado, eqVisao);
+		eqVisao = equivalenciaVisao(sLinha, operacoes, tempoInicio, tempoFimSemCommit);
 
-		// printf("%s\n", resultado);
+		strcat(resultado, " ");
+		strcat(resultado, eqVisao);
+
+		printf("%s\n", resultado);
 
 		free(idsEscalona);
 		tempoInicio = tempoFim + 1;

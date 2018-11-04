@@ -35,10 +35,11 @@ void printMatriz(int**, int);
 int** alocaMatriz(int);
 char *encontraEscalonamento(t_operacao*, int, int*, int*, int*, int*);
 void selectionSort(int*, int);
+void selectionSortEquivVisao(t_equivale*, int);
 char *transformaIds(int*, int);
 t_operacao *criaSLinha(t_operacao*, int, int, int);
 int vetoresIguais(t_equivale*, t_equivale*, int);
-char *equivalenciaVisao(t_operacao*, t_operacao*, int);
+char *equivalenciaVisao(t_operacao*, t_operacao*, int, int);
 void alteraIdsTransacao(t_operacao*, int, int, int);
 void zeraMatriz(int**, int);
 

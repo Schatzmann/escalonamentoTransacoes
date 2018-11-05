@@ -392,10 +392,12 @@ char *equivalenciaVisao(t_operacao *sLinha, t_operacao *s, int tempoInicio, int 
 				for(int j = i; j >= tempoInicio; --j){
 					if((s[j].opr == 'W' || s[j].opr == 'w') && (s[j].atrib == s[i].atrib)){
 						sReads[tamEquivS].write = s[j].idT;
+						break;
 					}
 	
-					if((j == tempoInicio) && (s[j].opr != 'W' || s[j].opr != 'w')){
+					if((j == tempoInicio) && s[j].opr != 'w'){
 						sReads[tamEquivS].write = 0;	
+						break;
 					}
 				}
 				tamEquivS++;
@@ -410,10 +412,12 @@ char *equivalenciaVisao(t_operacao *sLinha, t_operacao *s, int tempoInicio, int 
 				for(int j = i; j >= 1; --j){
 					if((sLinha[j].opr == 'W' || sLinha[j].opr == 'w') && (sLinha[j].atrib == sLinha[i].atrib)){
 						sLinhaReads[tamEquivS].write = sLinha[j].idT;
+						break;
 					}
 	
 					if((j == 1) && (sLinha[j].opr != 'W' || sLinha[j].opr != 'w')){
 						sLinhaReads[tamEquivS].write = 0;	
+						break;
 					}
 				}
 				tamEquivS++;
@@ -425,18 +429,6 @@ char *equivalenciaVisao(t_operacao *sLinha, t_operacao *s, int tempoInicio, int 
 		selectionSortEquivVisao(sReads, tamEquivS);
 		selectionSortEquivVisao(sLinhaReads, tamEquivS);
 
-		printf("\n\n\n");
-
-		printf("VETOR S:\n");
-		for(int i = 1; i <= tamEquivS; ++i){
-			printf("%d %d\n", sReads[i].read, sReads[i].write);
-		}
-		printf("\n\n");
-		printf("VETOR S':\n");
-		for(int i = 1; i <= tamEquivS; ++i){
-			printf("%d %d\n", sLinhaReads[i].read, sLinhaReads[i].write);
-		}
-	
 		if(vetoresIguais(sReads, sLinhaReads, tamEquivS))
 			ehEquivalente = 1;
 
@@ -451,6 +443,16 @@ char *equivalenciaVisao(t_operacao *sLinha, t_operacao *s, int tempoInicio, int 
 	}
 }
 
+/**
+ * @brief Faz a alteração dos Id's das transações.  
+ * @param operacoes     Ponteiro para a struct t_operacao.
+ * @param tempoInicio   Inteiro representando o tempo de inicio do escalonamento.
+ * @param tempoFim      Inteiro representando o tempo de fim do escalonamento.
+ * @param diff          Inteiro com a diferença a ser subtraída.
+ *
+ * Método para alterar os id's das transações de 1 até o tamanho do escalonamento
+ * para que possamos usar os id's nos indices da matriz de adjacência.
+ */
 void alteraIdsTransacao(t_operacao *operacoes, int tempoInicio, int tempoFim, int diff){
 
 	for (int i = tempoInicio; i <= tempoFim; ++i){
@@ -458,6 +460,11 @@ void alteraIdsTransacao(t_operacao *operacoes, int tempoInicio, int tempoFim, in
 	}
 }
 
+/**
+ * @brief Atribui o valor 0 (zero) a toda a matriz. 
+ * @param matriz   Ponteiro para ponteiros de inteiros representando a matriz.
+ * @param tam      Inteiro com o tamanho da matriz.
+ */
 void zeraMatriz(int** matriz, int tam){
 
 	for(int i = 1; i <= tam; ++i){
@@ -467,6 +474,11 @@ void zeraMatriz(int** matriz, int tam){
 	}
 }
 
+/**
+ * @brief Faz a ordenação de um vetor. 
+ * @param vetor      Ponteiro do tipo t_equivale representando um vetor.
+ * @param tamVetor   Inteiro com o tamanho do vetor.
+ */
 void selectionSortEquivVisao(t_equivale* vetor, int tamVetor){
 	int min; 
 	t_equivale aux;
